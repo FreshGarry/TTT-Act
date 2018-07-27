@@ -1,5 +1,12 @@
 -- Please ask me if you want to use parts of this code!
---TODO: Act abbrechen, dance unendlich
+
+hook.Add("PlayerButtonDown", "TTTAct_Cancel", function(ply, key)
+	if(ply.TTTActivity != nil) then
+		ply:AnimRestartGesture(GESTURE_SLOT_CUSTOM, ACT_IDLE, true)
+	end
+end)
+
+--TODO: dance unendlich
 -- FG Addons Table
 local Version = "1.0"
 if not TTTFGAddons then
@@ -63,6 +70,25 @@ local Acts = {
 	[14] = "group";
 	[15] = "pers";
 	[16] = "close"
+}
+
+local Acts_ACT_ENUMS = {
+	[1] = ACT_GMOD_TAUNT_DANCE;
+	[2] = ACT_GMOD_TAUNT_ROBOT;
+	[3] = ACT_GMOD_TAUNT_MUSCLE;
+	[4] = ACT_GMOD_TAUNT_LAUGH;
+	[5] = ACT_GMOD_GESTURE_BOW;
+	[6] = ACT_GMOD_TAUNT_CHEER;
+	[7] = ACT_GMOD_GESTURE_WAVE;
+	[8] = ACT_GMOD_GESTURE_TAUNT_ZOMBIE;
+	[9] = ACT_GMOD_GESTURE_AGREE;
+	[10] = ACT_GMOD_GESTURE_DISAGREE;
+	[11] = ACT_SIGNAL_HALT;
+	[12] = ACT_GMOD_GESTURE_BECON;
+	[13] = ACT_SIGNAL_FORWARD;
+	[14] = ACT_SIGNAL_GROUP;
+	[15] = ACT_GMOD_TAUNT_PERSISTENCE;
+	[16] = ACT_IDLE
 }
 local Sounds = {}
 
@@ -403,9 +429,14 @@ hook.Add("VGUIMousePressed","VGUIMousePressed4TTTAct",function(pnl,Mouse)
 	if MenuOpen then
 		local Sel = InSegment(gui.MousePos())
 		if not (Sel == -1) then 
+		
+			LocalPlayer():AnimRestartGesture(GESTURE_SLOT_CUSTOM, Acts_ACT_ENUMS[Sel], true)
+			timer.Simple(0.1, function() LocalPlayer().TTTActivity = Acts_ACT_ENUMS[Sel] end)
+			
+		
 			net.Start("TTTACT")
 			net.WriteEntity(LocalPlayer())
-			net.WriteString(Acts[Sel])
+			net.WriteString(Acts_ACT_ENUMS[Sel])
 			net.WriteFloat(Time[Acts[Sel]])
 			net.SendToServer()
 			MenuOpen = false
@@ -437,6 +468,7 @@ net.Receive("TTTACT", function()
 	end
 	IsActing = false
 	Timer = false
+	LocalPlayer().TTTActivity = nil
 end)
 local function DefaultI()
 	RunConsoleCommand( "ttt_act_hud_allignment", "0")
