@@ -6,6 +6,12 @@ hook.Add("PlayerButtonDown", "TTTAct_Cancel", function(ply, key)
 	end
 end)
 
+hook.Add("StartCommand", "TTTAct_MovementCancel", function(ply, ucmd)
+	if(ply.TTTActivity != nil) then
+		ucmd:ClearMovement()
+	end
+end)
+
 --TODO: dance unendlich
 -- FG Addons Table
 local Version = "1.0"
@@ -297,7 +303,8 @@ function draw.SpecialText(text, posX, posY, scaleX, scaleY, angle)
 end
 
 local function HUD(name,xPos,yPos,allignment,ColorA,ColorB,value,maximum)
-	if LocalPlayer():Alive() and LocalPlayer():IsTerror() and (not LocalPlayer():IsSpec()) then
+	if GAMEMODE_NAME != "terrortown" then return end
+	if LocalPlayer():Alive() and (GAMEMODE_NAME != "terrortown"  || LocalPlayer():IsTerror() and (not LocalPlayer():IsSpec())) then
 		local valueNumber = value
 		local number = true
 		if maximum == 0 then
@@ -385,7 +392,7 @@ concommand.Add("ttt_act", function(ply)
 		gui.EnableScreenClicker( false )
 		if CrosshairSize == "0" then CrosshairSize = CrosshairDebugSize:GetFloat() end
 		RunConsoleCommand( "ttt_crosshair_size", CrosshairSize )
-	elseif (not IsActing) and LocalPlayer():Alive() and LocalPlayer():IsTerror()  then
+	elseif (not IsActing) and LocalPlayer():Alive() and (GAMEMODE_NAME != "terrortown" || LocalPlayer():IsTerror()) then
 		MenuOpen = true
 		gui.EnableScreenClicker( true ) 
 		CrosshairSize = GetConVarString( "ttt_crosshair_size" )

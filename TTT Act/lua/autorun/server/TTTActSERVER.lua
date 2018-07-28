@@ -9,6 +9,13 @@ hook.Add("PlayerButtonDown", "TTTAct_Cancel", function(ply, key)
 	end
 end)
 
+hook.Add("StartCommand", "TTTAct_MovementCancel", function(ply, ucmd)
+	if(ply.TTTActivity != nil) then
+		ucmd:ClearMovement()
+	end
+end)
+
+
 
 util.AddNetworkString( "TTTACT" )
 net.Receive("TTTACT", function()
