@@ -1,5 +1,22 @@
 -- Please ask me if you want to use parts of this code!
 
+hook.Add("Think", "TTT_ShowOthersAnimations", function()
+
+for k, v in pairs( player.GetAll() ) do
+	local anim = v:GetNWInt("TTTActivity")
+	if anim != v.lastTTTActivity && v != LocalPlayer() then
+		if(anim == ACT_IDLE) then
+			v:AnimRestartGesture(GESTURE_SLOT_CUSTOM, ACT_IDLE, true)
+		else
+			v:AnimRestartGesture(GESTURE_SLOT_CUSTOM, anim, true)
+		end
+		
+		v.lastTTTActivity = anim 
+	end
+end
+
+end)
+
 hook.Add("PlayerButtonDown", "TTTAct_Cancel", function(ply, key)
 	if(ply.TTTActivity != nil) then
 		ply:AnimRestartGesture(GESTURE_SLOT_CUSTOM, ACT_IDLE, true)
@@ -198,7 +215,6 @@ local Resolution = 10
 local RadIn = 0.1666666666666666
 local space = 75
 local Scale = 300
-local Sound = false
 
 -- ConVars
 local PreviewRendering = CreateClientConVar( "ttt_act_hud_preview", "0", true, false, "Renders the HUD. Def: 0")
@@ -440,25 +456,33 @@ hook.Add("VGUIMousePressed","VGUIMousePressed4TTTAct",function(pnl,Mouse)
 			LocalPlayer():AnimRestartGesture(GESTURE_SLOT_CUSTOM, Acts_ACT_ENUMS[Sel], true)
 			timer.Simple(0.1, function() LocalPlayer().TTTActivity = Acts_ACT_ENUMS[Sel] end)
 			
+			local soundMode = 0
+			local soundPath = "nothing"
+			if Sounds[Sel] then
+				soundPath = Sounds[Sel][math.random(1, #Sounds[Sel])]
+				if Sel > 3 then
+					--LocalPlayer():EmitSound(soundPath, 75, 100, 1, CHAN_BODY )
+					--Sound = false
+					soundMode = 1
+				else
+					--Sound = CreateSound (LocalPlayer(), soundPath)
+					soundMode = 2
+					--Sound:Play()
+				end
+			end
+		
 		
 			net.Start("TTTACT")
 			net.WriteEntity(LocalPlayer())
 			net.WriteString(Acts_ACT_ENUMS[Sel])
 			net.WriteFloat(Time[Acts[Sel]])
+			net.WriteString(soundPath)
+			net.WriteFloat(soundMode)
 			net.SendToServer()
 			MenuOpen = false
 			gui.EnableScreenClicker( false )
 			IsActing = true
 			Act = Acts[Sel]
-			if Sounds[Sel] then
-				if Sel > 3 then
-					LocalPlayer():EmitSound(Sounds[Sel][math.random(1, #Sounds[Sel])], 75, 100, 1, CHAN_BODY )
-					Sound = false
-				else
-					Sound = CreateSound (LocalPlayer(), Sounds[Sel][math.random(1, #Sounds[Sel])]) 
-					Sound:Play()
-				end
-			end
 		else
 			if CrosshairSize == "0" then CrosshairSize = CrosshairDebugSize:GetFloat() end
 			RunConsoleCommand( "ttt_crosshair_size", CrosshairSize )
@@ -470,9 +494,6 @@ end)
 net.Receive("TTTACT", function()
 	if CrosshairSize == "0" then CrosshairSize = CrosshairDebugSize:GetFloat() end
 	RunConsoleCommand( "ttt_crosshair_size", CrosshairSize )
-	if Sound then
-		Sound:FadeOut(1)
-	end
 	IsActing = false
 	Timer = false
 	LocalPlayer().TTTActivity = nil
