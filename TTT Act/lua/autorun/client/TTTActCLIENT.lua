@@ -463,9 +463,11 @@ hook.Add("VGUIMousePressed","VGUIMousePressed4TTTAct",function(pnl,Mouse)
 				if Sel > 3 then
 					--LocalPlayer():EmitSound(soundPath, 75, 100, 1, CHAN_BODY )
 					--Sound = false
+					LocalPlayer():EmitSound(soundPath, 75, 100, 1, CHAN_BODY )
 					soundMode = 1
 				else
-					--Sound = CreateSound (LocalPlayer(), soundPath)
+					LocalPlayer().TTTActSound = CreateSound (LocalPlayer(), soundPath) 
+					LocalPlayer().TTTActSound:Play()
 					soundMode = 2
 					--Sound:Play()
 				end
@@ -497,6 +499,9 @@ net.Receive("TTTACT", function()
 	IsActing = false
 	Timer = false
 	LocalPlayer().TTTActivity = nil
+	if LocalPlayer().TTTActSound then
+		LocalPlayer().TTTActSound:FadeOut(1)
+	end
 end)
 local function DefaultI()
 	RunConsoleCommand( "ttt_act_hud_allignment", "0")
