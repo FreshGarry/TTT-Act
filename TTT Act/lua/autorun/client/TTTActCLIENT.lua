@@ -43,9 +43,8 @@ hook.Add("StartCommand", "TTTAct_MovementCancel", function(ply, ucmd)
 	end
 end)
 
---TODO: dance unendlich
 -- FG Addons Table
-local Version = "1.0"
+local Version = "2.1"
 if not TTTFGAddons then
 	TTTFGAddons = {}
 end
