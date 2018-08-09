@@ -35,13 +35,15 @@ net.Receive("TTTACT", function()
 	timer.Simple(0.1, function() ply.TTTActivity = Act end)
 	
 	ply:SetNWInt("TTTActivity", Act)
-	if mode == 1 then
-		ply:EmitSound(soundPath, 75, 100, 1, CHAN_BODY )
-		ply.TTTActSound = false
-	elseif mode == 2 then					
-		ply.TTTActSound = CreateSound (ply, soundPath) 
-		ply.TTTActSound:Play()
-	end
+	ply:SetNWString("TTTActivitySoundPath", soundPath)
+	ply:SetNWFloat("TTTActivitySoundMode", mode)
+	-- if mode == 1 then
+		-- ply:EmitSound(soundPath, 75, 100, 1, CHAN_BODY )
+		-- ply.TTTActSound = false
+	-- elseif mode == 2 then					
+		-- ply.TTTActSound = CreateSound (ply, soundPath) 
+		-- ply.TTTActSound:Play()
+	-- end
 	
 	timer.Create("TTTAct_TimesUp" .. ply:Nick(), Time, 1, function() 
 		ply.TTTActivity = nil

@@ -4,13 +4,24 @@ hook.Add("Think", "TTT_ShowOthersAnimations", function()
 
 for k, v in pairs( player.GetAll() ) do
 	local anim = v:GetNWInt("TTTActivity")
-	if anim != v.lastTTTActivity && v != LocalPlayer() then
+	if anim != v.lastTTTActivity then
 		if(anim == ACT_IDLE) then
 			v:AnimRestartGesture(GESTURE_SLOT_CUSTOM, ACT_IDLE, true)
+			if v.TTTActSound then
+				v.TTTActSound:FadeOut(1)
+			end
 		else
 			v:AnimRestartGesture(GESTURE_SLOT_CUSTOM, anim, true)
+			local soundPath = v:GetNWString("TTTActivitySoundPath")
+			local mode = v:GetNWFloat("TTTActivitySoundMode")
+			if mode == 1 then
+				v:EmitSound(soundPath, 75, 100, 1, CHAN_BODY )
+				v.TTTActSound = false
+			elseif mode == 2 then					
+				v.TTTActSound = CreateSound (v, soundPath) 
+				v.TTTActSound:Play()
+			end
 		end
-		
 		v.lastTTTActivity = anim 
 	end
 end
@@ -20,6 +31,9 @@ end)
 hook.Add("PlayerButtonDown", "TTTAct_Cancel", function(ply, key)
 	if(ply.TTTActivity != nil) then
 		ply:AnimRestartGesture(GESTURE_SLOT_CUSTOM, ACT_IDLE, true)
+		if ply.TTTActSound then
+			ply.TTTActSound:FadeOut(1)
+		end
 	end
 end)
 
@@ -463,11 +477,11 @@ hook.Add("VGUIMousePressed","VGUIMousePressed4TTTAct",function(pnl,Mouse)
 				if Sel > 3 then
 					--LocalPlayer():EmitSound(soundPath, 75, 100, 1, CHAN_BODY )
 					--Sound = false
-					LocalPlayer():EmitSound(soundPath, 75, 100, 1, CHAN_BODY )
+					--LocalPlayer():EmitSound(soundPath, 75, 100, 1, CHAN_BODY )
 					soundMode = 1
 				else
-					LocalPlayer().TTTActSound = CreateSound (LocalPlayer(), soundPath) 
-					LocalPlayer().TTTActSound:Play()
+					--LocalPlayer().TTTActSound = CreateSound (LocalPlayer(), soundPath) 
+					--LocalPlayer().TTTActSound:Play()
 					soundMode = 2
 					--Sound:Play()
 				end
@@ -499,9 +513,9 @@ net.Receive("TTTACT", function()
 	IsActing = false
 	Timer = false
 	LocalPlayer().TTTActivity = nil
-	if LocalPlayer().TTTActSound then
-		LocalPlayer().TTTActSound:FadeOut(1)
-	end
+	-- if LocalPlayer().TTTActSound then
+		-- LocalPlayer().TTTActSound:FadeOut(1)
+	-- end
 end)
 local function DefaultI()
 	RunConsoleCommand( "ttt_act_hud_allignment", "0")
