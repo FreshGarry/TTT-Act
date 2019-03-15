@@ -21,6 +21,16 @@ hook.Add("StartCommand", "TTTAct_MovementCancel", function(ply, ucmd)
 	end
 end)
 
+hook.Add("TTTPrepareRound", "TTTAct_TTTPrepareRound", function() -- Cancel when round ends
+	for k, ply in pairs(player:GetAll()) do
+		if(ply.TTTActivity != nil) then
+			timer.Remove("TTTAct_TimesUp" .. ply:Nick())
+			ply.TTTActivity = nil
+			net.Start("TTTACT") 
+			net.Send(ply)
+		end
+	end
+end)
 
 
 util.AddNetworkString( "TTTACT" )
@@ -37,13 +47,6 @@ net.Receive("TTTACT", function()
 	ply:SetNWInt("TTTActivity", Act)
 	ply:SetNWString("TTTActivitySoundPath", soundPath)
 	ply:SetNWFloat("TTTActivitySoundMode", mode)
-	-- if mode == 1 then
-		-- ply:EmitSound(soundPath, 75, 100, 1, CHAN_BODY )
-		-- ply.TTTActSound = false
-	-- elseif mode == 2 then					
-		-- ply.TTTActSound = CreateSound (ply, soundPath) 
-		-- ply.TTTActSound:Play()
-	-- end
 	
 	timer.Create("TTTAct_TimesUp" .. ply:Nick(), Time, 1, function() 
 		ply.TTTActivity = nil

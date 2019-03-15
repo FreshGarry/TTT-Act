@@ -1,31 +1,31 @@
 -- Please ask me if you want to use parts of this code!
 
+local loudness = CreateClientConVar( "ttt_act_loudness", "75", true, false, "Sets the loudness of the Sounds. Def:75")
+
 hook.Add("Think", "TTT_ShowOthersAnimations", function()
-
-for k, v in pairs( player.GetAll() ) do
-	local anim = v:GetNWInt("TTTActivity")
-	if anim != v.lastTTTActivity then
-		if(anim == ACT_IDLE) then
-			v:AnimRestartGesture(GESTURE_SLOT_CUSTOM, ACT_IDLE, true)
-			if v.TTTActSound then
-				v.TTTActSound:FadeOut(1)
+	for k, v in pairs( player.GetAll() ) do
+		local anim = v:GetNWInt("TTTActivity")
+		if anim != v.lastTTTActivity then
+			if(anim == ACT_IDLE) then
+				v:AnimRestartGesture(GESTURE_SLOT_CUSTOM, ACT_IDLE, true)
+				if v.TTTActSound then
+					v.TTTActSound:FadeOut(1)
+				end
+			else
+				v:AnimRestartGesture(GESTURE_SLOT_CUSTOM, anim, true)
+				local soundPath = v:GetNWString("TTTActivitySoundPath")
+				local mode = v:GetNWFloat("TTTActivitySoundMode")
+				if mode == 1 then
+					v:EmitSound(soundPath, loudness:GetFloat(), 100, 1, CHAN_BODY )
+					v.TTTActSound = false
+				elseif mode == 2 then
+					v.TTTActSound = CreateSound (v, soundPath) 
+					v.TTTActSound:Play()
+				end
 			end
-		else
-			v:AnimRestartGesture(GESTURE_SLOT_CUSTOM, anim, true)
-			local soundPath = v:GetNWString("TTTActivitySoundPath")
-			local mode = v:GetNWFloat("TTTActivitySoundMode")
-			if mode == 1 then
-				v:EmitSound(soundPath, 75, 100, 1, CHAN_BODY )
-				v.TTTActSound = false
-			elseif mode == 2 then					
-				v.TTTActSound = CreateSound (v, soundPath) 
-				v.TTTActSound:Play()
-			end
+			v.lastTTTActivity = anim 
 		end
-		v.lastTTTActivity = anim 
 	end
-end
-
 end)
 
 hook.Add("PlayerButtonDown", "TTTAct_Cancel", function(ply, key)
@@ -44,7 +44,7 @@ hook.Add("StartCommand", "TTTAct_MovementCancel", function(ply, ucmd)
 end)
 
 -- FG Addons Table
-local Version = "2.1"
+local Version = "2.2"
 if not TTTFGAddons then
 	TTTFGAddons = {}
 end
@@ -140,76 +140,77 @@ local function AddSound(ActNr, path)
 		name = name,
 		channel = CHAN_BODY,
 		volume = 1,
-		level = 75,
+		level = loudness:GetFloat(),
 		pitch = { 95, 110 },
 		sound = path
 	} )
 end
 
+local function SoundsPaths()
+	AddSound(1, "music/HL1_song10.mp3")
+	AddSound(1, "music/HL1_song17.mp3")
+	AddSound(1, "music/HL1_song25_REMIX3.mp3")
+	AddSound(1, "music/HL2_song12_long.mp3")
+	AddSound(1, "music/HL2_song15.mp3")
+	AddSound(1, "music/HL2_song20_submix0.mp3")
+	AddSound(1, "music/HL2_song20_submix4.mp3")
+	AddSound(1, "music/HL2_song31.mp3")
+	AddSound(1, "music/HL2_song4.mp3")
 
-AddSound(1, "music/HL1_song10.mp3")
-AddSound(1, "music/HL1_song17.mp3")
-AddSound(1, "music/HL1_song25_REMIX3.mp3")
-AddSound(1, "music/HL2_song12_long.mp3")
-AddSound(1, "music/HL2_song15.mp3")
-AddSound(1, "music/HL2_song20_submix0.mp3")
-AddSound(1, "music/HL2_song20_submix4.mp3")
-AddSound(1, "music/HL2_song31.mp3")
-AddSound(1, "music/HL2_song4.mp3")
+	AddSound(2, "HL1/ambience/techamb2.wav")
 
-AddSound(2, "HL1/ambience/techamb2.wav")
+	AddSound(3, "music/HL1_song25_REMIX3.mp3")
+	AddSound(3, "music/HL2_song15.mp3")
+	AddSound(3, "music/HL2_song3.mp3")
 
-AddSound(3, "music/HL1_song25_REMIX3.mp3")
-AddSound(3, "music/HL2_song15.mp3")
-AddSound(3, "music/HL2_song3.mp3")
+	AddSound(4, "vo/Citadel/br_laugh01.wav")
+	AddSound(4, "vo/eli_lab/al_laugh01.wav")
+	AddSound(4, "vo/eli_lab/al_laugh02.wav")
+	AddSound(4, "vo/npc/Barney/ba_laugh01.wav")
+	AddSound(4, "vo/npc/Barney/ba_laugh02.wav")
+	AddSound(4, "vo/npc/Barney/ba_laugh04.wav")
+	AddSound(4, "vo/ravenholm/madlaugh01.wav")
+	AddSound(4, "vo/ravenholm/madlaugh02.wav")
+	AddSound(4, "vo/ravenholm/madlaugh03.wav")
+	AddSound(4, "vo/ravenholm/madlaugh04.wav")
 
-AddSound(4, "vo/Citadel/br_laugh01.wav")
-AddSound(4, "vo/eli_lab/al_laugh01.wav")
-AddSound(4, "vo/eli_lab/al_laugh02.wav")
-AddSound(4, "vo/npc/Barney/ba_laugh01.wav")
-AddSound(4, "vo/npc/Barney/ba_laugh02.wav")
-AddSound(4, "vo/npc/Barney/ba_laugh04.wav")
-AddSound(4, "vo/ravenholm/madlaugh01.wav")
-AddSound(4, "vo/ravenholm/madlaugh02.wav")
-AddSound(4, "vo/ravenholm/madlaugh03.wav")
-AddSound(4, "vo/ravenholm/madlaugh04.wav")
-
-AddSound(6, "vo/coast/odessa/female01/nlo_cheer01.wav")
-AddSound(6, "vo/coast/odessa/female01/nlo_cheer02.wav")
-AddSound(6, "vo/coast/odessa/female01/nlo_cheer03.wav")
-AddSound(6, "vo/coast/odessa/male01/nlo_cheer01.wav")
-AddSound(6, "vo/coast/odessa/male01/nlo_cheer02.wav")
-AddSound(6, "vo/coast/odessa/male01/nlo_cheer04.wav")
-
-
-AddSound(8, "ambient/creatures/town_zombie_call1.wav")
-AddSound(8, "ambient/levels/prison/inside_battle_zombie1.wav")
-AddSound(8, "ambient/levels/prison/inside_battle_zombie2.wav")
-
-AddSound(9, "vo/Citadel/al_yes.wav")
-AddSound(9, "vo/Citadel/al_yes_nr.wav")
-
-AddSound(10, "vo/Citadel/br_no.wav")
-AddSound(10, "vo/Streetwar/Alyx_gate/al_no.wav")
-AddSound(10, "vo/Citadel/al_fail_no.wav")
-AddSound(10, "vo/Citadel/br_no.wav")
-
-AddSound(11, "vo/npc/vortigaunt/halt.wav")
-
-AddSound(12, "vo/NovaProspekt/al_overhere.wav")
-AddSound(12, "vo/npc/female01/overhere01.wav")
-AddSound(12, "vo/npc/male01/overhere01.wav")
-AddSound(12, "vo/ravenholm/monk_overhere.wav")
-AddSound(12, "vo/trainyard/al_overhere.wav")
-
-AddSound(13, "vo/npc/vortigaunt/forward.wav")
-AddSound(13, "vo/npc/vortigaunt/yesforward.wav")
-AddSound(13, "vo/npc/Barney/ba_letsgo.wav")
-AddSound(13, "vo/npc/female01/letsgo01.wav")
-AddSound(13, "vo/npc/female01/letsgo02.wav")
-AddSound(13, "vo/npc/male01/letsgo02.wav")
+	AddSound(6, "vo/coast/odessa/female01/nlo_cheer01.wav")
+	AddSound(6, "vo/coast/odessa/female01/nlo_cheer02.wav")
+	AddSound(6, "vo/coast/odessa/female01/nlo_cheer03.wav")
+	AddSound(6, "vo/coast/odessa/male01/nlo_cheer01.wav")
+	AddSound(6, "vo/coast/odessa/male01/nlo_cheer02.wav")
+	AddSound(6, "vo/coast/odessa/male01/nlo_cheer04.wav")
 
 
+	AddSound(8, "ambient/creatures/town_zombie_call1.wav")
+	AddSound(8, "ambient/levels/prison/inside_battle_zombie1.wav")
+	AddSound(8, "ambient/levels/prison/inside_battle_zombie2.wav")
+
+	AddSound(9, "vo/Citadel/al_yes.wav")
+	AddSound(9, "vo/Citadel/al_yes_nr.wav")
+
+	AddSound(10, "vo/Citadel/br_no.wav")
+	AddSound(10, "vo/Streetwar/Alyx_gate/al_no.wav")
+	AddSound(10, "vo/Citadel/al_fail_no.wav")
+	AddSound(10, "vo/Citadel/br_no.wav")
+
+	AddSound(11, "vo/npc/vortigaunt/halt.wav")
+
+	AddSound(12, "vo/NovaProspekt/al_overhere.wav")
+	AddSound(12, "vo/npc/female01/overhere01.wav")
+	AddSound(12, "vo/npc/male01/overhere01.wav")
+	AddSound(12, "vo/ravenholm/monk_overhere.wav")
+	AddSound(12, "vo/trainyard/al_overhere.wav")
+
+	AddSound(13, "vo/npc/vortigaunt/forward.wav")
+	AddSound(13, "vo/npc/vortigaunt/yesforward.wav")
+	AddSound(13, "vo/npc/Barney/ba_letsgo.wav")
+	AddSound(13, "vo/npc/female01/letsgo01.wav")
+	AddSound(13, "vo/npc/female01/letsgo02.wav")
+	AddSound(13, "vo/npc/male01/letsgo02.wav")
+end
+
+SoundsPaths()
 
 -- Vars
 local Timer = false
@@ -235,6 +236,12 @@ local xPos = CreateClientConVar( "ttt_act_hud_offset_x", "265", true, false, "Th
 local yPos = CreateClientConVar( "ttt_act_hud_offset_y", "60", true, false, "The y offset of the HUD. Def: 60")
 local allignment = CreateClientConVar( "ttt_act_hud_allignment", "0", true, false, "The allignment of the hud. (0 = bottom, left; 1 = top, left; 2 = top, right; 3 = bottom, right) Def: 0")
 local CrosshairDebugSize = CreateClientConVar( "ttt_act_crosshairdebugsize", "1", true, false, "The size of the crosshair used to prevent no crosshair while it should be there. (Disabled = 0) Def:1")
+
+cvars.AddChangeCallback("ttt_act_loudness", function()
+	print("TTT Act: Updated sound loudness!")
+	Sounds = {}
+	SoundsPaths()
+end)
 
 surface.CreateFont("HUDFont", {font = "Trebuchet24", size = 24, weight = 750})
 function draw.Circle( x, y, radius, seg ) -- https://wiki.garrysmod.com/page/surface/DrawPoly - this is not my code
@@ -474,15 +481,9 @@ hook.Add("VGUIMousePressed","VGUIMousePressed4TTTAct",function(pnl,Mouse)
 			if Sounds[Sel] then
 				soundPath = Sounds[Sel][math.random(1, #Sounds[Sel])]
 				if Sel > 3 then
-					--LocalPlayer():EmitSound(soundPath, 75, 100, 1, CHAN_BODY )
-					--Sound = false
-					--LocalPlayer():EmitSound(soundPath, 75, 100, 1, CHAN_BODY )
 					soundMode = 1
 				else
-					--LocalPlayer().TTTActSound = CreateSound (LocalPlayer(), soundPath) 
-					--LocalPlayer().TTTActSound:Play()
 					soundMode = 2
-					--Sound:Play()
 				end
 			end
 		
@@ -512,9 +513,6 @@ net.Receive("TTTACT", function()
 	IsActing = false
 	Timer = false
 	LocalPlayer().TTTActivity = nil
-	-- if LocalPlayer().TTTActSound then
-		-- LocalPlayer().TTTActSound:FadeOut(1)
-	-- end
 end)
 local function DefaultI()
 	RunConsoleCommand( "ttt_act_hud_allignment", "0")
@@ -569,6 +567,8 @@ hook.Add("TTTSettingsTabs", "TTTact4TTTSettingsTabs", function(dtabs)
 	General_Settings:SetName( "General settings" )
 	General_Settings:SetWide(settings_panel:GetWide()-30)
 	settings_panel:AddItem(General_Settings)
+	
+	General_Settings:NumSlider("Sound loudness", "ttt_act_loudness", 0, 200, 0)
 	General_Settings:CheckBox("Print chat message at the beginning of the round (TTT FG Addons)","ttt_fgaddons_textmessage")
 	
 	--HUD Positioning
