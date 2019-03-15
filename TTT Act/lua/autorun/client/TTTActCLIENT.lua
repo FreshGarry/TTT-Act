@@ -2,6 +2,16 @@
 
 local loudness = CreateClientConVar( "ttt_act_loudness", "75", true, false, "Sets the loudness of the Sounds. Def:75")
 
+if TTT2 then
+	bind.Register("ttt_act", function()
+		RunConsoleCommand( "ttt_act")
+	end,
+	function()
+	end)
+	
+	bind.AddSettingsBinding("ttt_act", "TTT2 Act")
+end
+
 hook.Add("Think", "TTT_ShowOthersAnimations", function()
 	for k, v in pairs( player.GetAll() ) do
 		local anim = v:GetNWInt("TTTActivity")
