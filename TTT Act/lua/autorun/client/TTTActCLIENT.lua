@@ -254,7 +254,7 @@ cvars.AddChangeCallback("ttt_act_loudness", function()
 end)
 
 surface.CreateFont("HUDFont", {font = "Trebuchet24", size = 24, weight = 750})
-function draw.Circle( x, y, radius, seg ) -- https://wiki.garrysmod.com/page/surface/DrawPoly - this is not my code
+function draw.CircleACT( x, y, radius, seg ) -- https://wiki.garrysmod.com/page/surface/DrawPoly - this is not my code
 	local cir = {}
 
 	table.insert( cir, { x = x, y = y, u = 0.5, v = 0.5 } )
@@ -414,7 +414,7 @@ hook.Add("HUDPaint", "HUDPaint4TTTAct", function()
 	if MenuOpen then
 		surface.SetDrawColor(0,0,0,200)
 		draw.NoTexture()
-		draw.Circle( MidW, MidH, 50, 16 )
+		draw.CircleACT( MidW, MidH, 50, 16 )
 		draw.SimpleText( "Acts", "Trebuchet24", MidW, MidH, Color( 255, 255, 255, 255 ), 1, 1 )
 		draw.NoTexture()
 		draw.PieMenu()
